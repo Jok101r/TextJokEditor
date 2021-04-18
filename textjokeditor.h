@@ -2,6 +2,8 @@
 
 #include <QMainWindow>
 #include <QAction>
+#include <QToolBar>
+#include <QPixmap>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class TextJokEditor; }
@@ -16,5 +18,9 @@ public:
     ~TextJokEditor();
 
 private:
+    QToolBar *m_toolbar;
+    QMenu *m_file;
+    QMenu *m_edit;
+
     Ui::TextJokEditor *ui;
 };

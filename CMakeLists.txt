@@ -32,6 +32,7 @@ set(PROJECT_SOURCES
         textjokeditor.cpp
         textjokeditor.h
         textjokeditor.ui
+        resources/resources.qrc
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

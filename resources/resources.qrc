@@ -10,5 +10,6 @@
         <file alias="settings3232">images/Settings_32x32.png</file>
         <file alias="undo3232">images/Undo_32x32.png</file>
         <file alias="find">images/Find_16x16.png</file>
+        <file alias="logout3232">images/Log Out_32x32.png</file>
     </qresource>
 </RCC>
