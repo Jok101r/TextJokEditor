@@ -34,11 +34,6 @@
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action_New">
-   <property name="text">
-    <string>&amp;New</string>
-   </property>
-  </action>
  </widget>
  <resources/>
  <connections/>

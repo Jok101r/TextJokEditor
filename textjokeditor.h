@@ -4,6 +4,8 @@
 #include <QAction>
 #include <QToolBar>
 #include <QPixmap>
+#include <QMessageBox>
+#include <QFileDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class TextJokEditor; }
@@ -16,6 +18,9 @@ class TextJokEditor : public QMainWindow
 public:
     TextJokEditor(QWidget *parent = nullptr);
     ~TextJokEditor();
+
+private slots:
+    void fileOpen();
 
 private:
     QToolBar *m_toolbar;

@@ -56,27 +56,42 @@ TextJokEditor::TextJokEditor(QWidget *parent)
     m_edit->addAction(copy);
     m_edit->addAction(paste);
 
-
-
-
-
-
 //    ui->action_New->setIcon(QIcon(":/icons/mainform/find"));
 //    ui->action_New->setShortcut (QKeySequence::New) ;
 
     m_toolbar = addToolBar("Mainm_toolbar");
 
-    m_toolbar->addAction(newpic, "New file");
-    m_toolbar->addAction(openpic, "Open file");
-    m_toolbar->addAction(savepic, "Save file");
-    m_toolbar->addSeparator();
-    m_toolbar->addAction(undopic, "Undo text");
-    m_toolbar->addAction(redopic, "Redo text");
-    m_toolbar->addSeparator();
-    m_toolbar->addAction(cutpic, "Cut text");
-    m_toolbar->addAction(copypic, "Copy text");
-    m_toolbar->addAction(pasterpic, "Paste text");
 
+    QAction *newtoolbar = m_toolbar->addAction(newpic, "New file");
+    QAction *opentoolbar = m_toolbar->addAction(openpic, "Open file");
+    QAction *savetoolbar = m_toolbar->addAction(savepic, "Save file");
+    m_toolbar->addSeparator();
+    QAction *undotoolbar = m_toolbar->addAction(undopic, "Undo text");
+    QAction *redotoolbar = m_toolbar->addAction(redopic, "Redo text");
+    m_toolbar->addSeparator();
+    QAction *cuttoolbar = m_toolbar->addAction(cutpic, "Cut text");
+    QAction *copytoolbar = m_toolbar->addAction(copypic, "Copy text");
+    QAction *pastetoolbar = m_toolbar->addAction(pasterpic, "Paste text");
+
+    //это почему-то не работает:(
+    //connect(newa, SIGNAL(triggered()), this, SLOT(helov));
+    connect(open, &QAction::triggered, this, &TextJokEditor::fileOpen);
+    connect(opentoolbar, &QAction::triggered, this, &TextJokEditor::fileOpen);
+
+
+
+}
+void TextJokEditor::fileOpen(){
+
+    QString fileName = QFileDialog::getOpenFileName(this, "Open file PLZ...", QDir::homePath(), "*.txt;; All files (*.*)");
+
+    if (fileName.isEmpty())
+        return;
+
+    //askforfilsaveandclose
+
+
+    //QMessageBox::information(this, "Text", " chto proishodit");
 
 }
 
