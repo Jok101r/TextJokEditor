@@ -30,7 +30,7 @@ private:
     QMenu *m_file;
     QMenu *m_edit;
 
-    QString m_textData = " text100";
+    QString m_textData;
 
     QString m_fileNameOpen;
     QString m_fileNameSave;
