@@ -19,7 +19,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <widget class="QPlainTextEdit" name="plainTextEdit"/>
+     <widget class="QPlainTextEdit" name="textField"/>
     </item>
    </layout>
   </widget>
@@ -29,7 +29,7 @@
      <x>0</x>
      <y>0</y>
      <width>511</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

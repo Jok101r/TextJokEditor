@@ -17,7 +17,6 @@ TextJokEditor::TextJokEditor(QWidget *parent)
     QPixmap pasterpic(":/icons/mainform/paste3232");
     QPixmap quitpic(":/icons/mainform/logout232");
 
-
     QAction *newa = new QAction(newpic, "&New", this);
     QAction *open = new QAction(openpic, "&Open", this);
     QAction *save = new QAction(savepic, "&Save", this);
@@ -36,11 +35,11 @@ TextJokEditor::TextJokEditor(QWidget *parent)
     m_file->addAction(quit);
 
 
-    QAction *undo = new QAction(undopic, "&New", this);
-    QAction *redo = new QAction(redopic, "&Open", this);
-    QAction *cut = new QAction(cutpic, "&Save", this);
-    QAction *copy = new QAction(copypic, "&Quit", this);
-    QAction *paste = new QAction(pasterpic, "&Quit", this);
+    QAction *undo = new QAction(undopic, "&Undo", this);
+    QAction *redo = new QAction(redopic, "&Redo", this);
+    QAction *cut = new QAction(cutpic, "&Cut", this);
+    QAction *copy = new QAction(copypic, "&Copy", this);
+    QAction *paste = new QAction(pasterpic, "&Paste", this);
 
     undo->setShortcut(QKeySequence::Undo);
     redo->setShortcut(QKeySequence::Redo);
@@ -51,7 +50,7 @@ TextJokEditor::TextJokEditor(QWidget *parent)
     m_edit = menuBar()->addMenu("&Edit");
     m_edit->addAction(undo);
     m_edit->addAction(redo);
-    m_file->addSeparator();
+    m_edit->addSeparator();
     m_edit->addAction(cut);
     m_edit->addAction(copy);
     m_edit->addAction(paste);
@@ -78,6 +77,9 @@ TextJokEditor::TextJokEditor(QWidget *parent)
     connect(open, &QAction::triggered, this, &TextJokEditor::fileOpen);
     connect(opentoolbar, &QAction::triggered, this, &TextJokEditor::fileOpen);
 
+    connect(save, &QAction::triggered, this, &TextJokEditor::fileSave);
+    connect(savetoolbar, &QAction::triggered, this, &TextJokEditor::fileSave);
+
 
 
 }
@@ -88,11 +90,40 @@ void TextJokEditor::fileOpen(){
     if (fileName.isEmpty())
         return;
 
-    //askforfilsaveandclose
+    QFile file(fileName);
+    if(file.exists()){
+        file.open(QIODevice::ReadOnly);
+
+        QTextStream in(&file);
+
+        m_textData.clear();
+        while (!in.atEnd()) {
+
+            m_textData.push_back(in.read(1));
+
+        }
+        ui->textField->setPlainText(m_textData);
+
+
+    }
+    else {
+        QMessageBox::warning(this, "File not found", "File not found");
+    }
 
 
     //QMessageBox::information(this, "Text", " chto proishodit");
 
+}
+
+void TextJokEditor::fileSave()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, "Save file...", QDir::homePath(), tr (" *.txt;; All files (*.*)" )) ;
+
+    if(fileName.isEmpty())
+        return;
+
+
+    QMessageBox::information(this, "Text", fileName);
 }
 
 TextJokEditor::~TextJokEditor()

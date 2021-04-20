@@ -21,11 +21,14 @@ public:
 
 private slots:
     void fileOpen();
+    void fileSave();
 
 private:
     QToolBar *m_toolbar;
     QMenu *m_file;
     QMenu *m_edit;
+
+    QString m_textData;
 
     Ui::TextJokEditor *ui;
 };
