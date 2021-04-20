@@ -80,17 +80,24 @@ TextJokEditor::TextJokEditor(QWidget *parent)
     connect(save, &QAction::triggered, this, &TextJokEditor::fileSave);
     connect(savetoolbar, &QAction::triggered, this, &TextJokEditor::fileSave);
 
+    connect(newa, &QAction::triggered, this, &TextJokEditor::fileNew);
+    connect(newtoolbar, &QAction::triggered, this, &TextJokEditor::fileNew);
+
+
 
 
 }
 void TextJokEditor::fileOpen(){
 
-    QString fileName = QFileDialog::getOpenFileName(this, "Open file PLZ...", QDir::homePath(), "*.txt;; All files (*.*)");
+    m_fileNameOpen = QFileDialog::getOpenFileName(this, "Open file PLZ...", QDir::homePath(), "*.txt;; All files (*.*)");
 
-    if (fileName.isEmpty())
+    //в случае пересохранении текстового файла
+    m_fileNameSave = m_fileNameOpen;
+
+    if (m_fileNameOpen.isEmpty())
         return;
 
-    QFile file(fileName);
+    QFile file(m_fileNameOpen);
     if(file.exists()){
         file.open(QIODevice::ReadOnly);
 
@@ -117,13 +124,53 @@ void TextJokEditor::fileOpen(){
 
 void TextJokEditor::fileSave()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "Save file...", QDir::homePath(), tr (" *.txt;; All files (*.*)" )) ;
 
-    if(fileName.isEmpty())
-        return;
+    if (m_fileNameSave.isEmpty()){
+        QString m_fileNameSave = QFileDialog::getSaveFileName(this, "Save file...", QDir::homePath(), tr (" *.txt;; All files (*.*)" )) ;
+
+        if(m_fileNameSave.isEmpty())
+            return;
+
+        QFile file(m_fileNameSave);
+        file.open(QIODevice::Text | QIODevice::WriteOnly);
+        if(file.exists()){
+            //file.write(m_textData);
+            QTextStream out(&file);
+
+//            for(int i=0; i<m_textData.length();i++)
+//                out << m_textData[i];
+            foreach(auto index, m_textData)
+                out << index;
+//            while (!in.atEnd()) {
+
+//                m_textData.push_back(in.read(1));
+
+//            }
+//            ui->textField->setPlainText(m_textData);
+
+            file.close();
 
 
-    QMessageBox::information(this, "Text", fileName);
+        }
+        else {
+            QMessageBox::warning(this, "File not found", "File not found");
+        }
+
+
+        QMessageBox::information(this, "Text", m_fileNameSave);
+    }
+}
+
+void TextJokEditor::fileNew()
+{
+    //проверка на изменения файла
+    if (true){
+        m_textData.clear();
+        ui->textField->setPlainText(m_textData);
+
+    }else {
+        fileSave();
+    }
 }
 
 TextJokEditor::~TextJokEditor()
