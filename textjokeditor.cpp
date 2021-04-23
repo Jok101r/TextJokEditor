@@ -83,6 +83,21 @@ TextJokEditor::TextJokEditor(QWidget *parent)
     connect(newa, &QAction::triggered, this, &TextJokEditor::fileNew);
     connect(newtoolbar, &QAction::triggered, this, &TextJokEditor::fileNew);
 
+    connect(copy, &QAction::triggered, this, &TextJokEditor::textCopy);
+    connect(copytoolbar, &QAction::triggered, this, &TextJokEditor::textCopy);
+
+    connect(paste, &QAction::triggered, this, &TextJokEditor::textCopy);
+    connect(pastetoolbar, &QAction::triggered, this, &TextJokEditor::textPaste);
+
+    connect(cut, &QAction::triggered, this, &TextJokEditor::textCut);
+    connect(cuttoolbar, &QAction::triggered, this, &TextJokEditor::textCut);
+
+    connect(undo, &QAction::triggered, this, &TextJokEditor::textUndo);
+    connect(undotoolbar, &QAction::triggered, this, &TextJokEditor::textUndo);
+
+    connect(redo, &QAction::triggered, this, &TextJokEditor::textRedo);
+    connect(redotoolbar, &QAction::triggered, this, &TextJokEditor::textRedo);
+
 
 
 
@@ -98,6 +113,9 @@ void TextJokEditor::fileOpen(){
         return;
 
     QFile file(m_fileNameOpen);
+
+    updateTitle(file.fileName());
+
     if(file.exists()){
         file.open(QIODevice::ReadOnly);
 
@@ -122,8 +140,25 @@ void TextJokEditor::fileOpen(){
 
 }
 
+void openFileWrite(QFile &file, QString &textData, QWidget *wid){
+
+    file.open(QIODevice::Text | QIODevice::WriteOnly);
+    if(file.exists()){
+        QTextStream out(&file);
+        foreach(auto index, textData)
+            out << index;
+        file.close();
+    }
+    else {
+        QMessageBox::warning(wid, "File not found", "File not found");
+
+    }
+
+}
 void TextJokEditor::fileSave()
 {
+
+    m_textData = ui->textField->toPlainText();
 
     if (m_fileNameSave.isEmpty()){
         QString m_fileNameSave = QFileDialog::getSaveFileName(this, "Save file...", QDir::homePath(), tr (" *.txt;; All files (*.*)" )) ;
@@ -132,32 +167,14 @@ void TextJokEditor::fileSave()
             return;
 
         QFile file(m_fileNameSave);
-        file.open(QIODevice::Text | QIODevice::WriteOnly);
-        if(file.exists()){
-            //file.write(m_textData);
-            QTextStream out(&file);
 
-//            for(int i=0; i<m_textData.length();i++)
-//                out << m_textData[i];
-            foreach(auto index, m_textData)
-                out << index;
-//            while (!in.atEnd()) {
+        openFileWrite(file, m_textData, this);
+    }
+    else{
 
-//                m_textData.push_back(in.read(1));
-
-//            }
-//            ui->textField->setPlainText(m_textData);
-
-            file.close();
-
-
-        }
-        else {
-            QMessageBox::warning(this, "File not found", "File not found");
-        }
-
-
-        QMessageBox::information(this, "Text", m_fileNameSave);
+        QFile file(m_fileNameSave);
+        file.remove();
+        openFileWrite(file,m_textData, this);
     }
 }
 
@@ -171,6 +188,40 @@ void TextJokEditor::fileNew()
     }else {
         fileSave();
     }
+}
+
+void TextJokEditor::textCopy()
+{
+    ui->textField->copy();
+}
+
+void TextJokEditor::textPaste()
+{
+    ui->textField->paste();
+}
+
+void TextJokEditor::textCut()
+{
+    ui->textField->cut();
+}
+
+void TextJokEditor::textUndo()
+{
+    ui->textField->undo();
+}
+void TextJokEditor::textRedo()
+{
+    ui->textField->redo();
+}
+
+void TextJokEditor::updateTitle(QString fileName)
+{
+    //Подставляем в название заголовка имя текущего открытого файла.
+    //Комбинацией символов " [ ∗ ] " обозначаем место, где будет выводиться знак "∗" в случае,
+    //когда содержимое окна модифицировано.
+
+    QString title = QString("TextJokEditor - %1[*]").arg(fileName); //устанавливаем заголовок окна
+    setWindowTitle( title ) ;
 }
 
 TextJokEditor::~TextJokEditor()

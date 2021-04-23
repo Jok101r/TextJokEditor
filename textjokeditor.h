@@ -24,6 +24,11 @@ private slots:
     void fileOpen();
     void fileSave();
     void fileNew();
+    void textCopy();
+    void textPaste();
+    void textCut();
+    void textUndo();
+    void textRedo();
 
 private:
     QToolBar *m_toolbar;
@@ -35,5 +40,11 @@ private:
     QString m_fileNameOpen;
     QString m_fileNameSave;
 
+    bool m_isNewFile;
+
     Ui::TextJokEditor *ui;
+
+    void updateTitle(QString);
+
+
 };
