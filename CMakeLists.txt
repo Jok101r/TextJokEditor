@@ -33,6 +33,9 @@ set(PROJECT_SOURCES
         textjokeditor.h
         textjokeditor.ui
         resources/resources.qrc
+        settingseditor.cpp
+        settingseditor.h
+        settingseditor.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
