@@ -1,5 +1,4 @@
-#ifndef SETTINGSEDITOR_H
-#define SETTINGSEDITOR_H
+#pragma once
 
 #include <QDialog>
 
@@ -14,9 +13,12 @@ class SettingsEditor : public QDialog
 public:
     explicit SettingsEditor(QWidget *parent = nullptr);
     ~SettingsEditor();
+    bool isShowToolBar ( ) const ;
+    void setShowToolBar ( bool pShow ) ;
+    bool isShowStatusBar ( ) const ;
+    void setShowStatusBar ( bool pShow ) ;
 
 private:
     Ui::SettingsEditor *ui;
 };
 
-#endif // SETTINGSEDITOR_H
