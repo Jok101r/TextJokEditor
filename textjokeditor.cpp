@@ -9,6 +9,8 @@ TextJokEditor::TextJokEditor(QWidget *parent)
      m_SettingsEditor (new SettingsEditor(this))
 {
     ui->setupUi(this);
+    //статический вывод в статусбаре
+    label = new QLabel (this);
 
     QPixmap newpic(":/icons/mainform/new3232");
     QPixmap openpic(":/icons/mainform/open3232");
@@ -18,7 +20,7 @@ TextJokEditor::TextJokEditor(QWidget *parent)
     QPixmap cutpic(":/icons/mainform/cut3232");
     QPixmap copypic(":/icons/mainform/copy3232");
     QPixmap pasterpic(":/icons/mainform/paste3232");
-    QPixmap quitpic(":/icons/mainform/logout232");
+    QPixmap quitpic(":/icons/mainform/logout3232");
     QPixmap setpic(":/icons/mainform/settings3232");
 
     //меню File
@@ -69,7 +71,8 @@ TextJokEditor::TextJokEditor(QWidget *parent)
     QAction *settings = new QAction(setpic, "&Settings", this);
 
     //горячие клавиши
-    //settings->setShortcut();
+    //проверить работу на маке
+    settings->setShortcut(tr("CTRL+P"));
 
     //отображение
     m_settings = menuBar()->addMenu("&Settings");
@@ -89,6 +92,8 @@ TextJokEditor::TextJokEditor(QWidget *parent)
     QAction *copytoolbar = m_toolbar->addAction(copypic, "Copy text");
     QAction *pastetoolbar = m_toolbar->addAction(pasterpic, "Paste text");
 
+    //подключение кнопок в Qtoolbar и Qmenu к слоту
+
     //это почему-то не работает:(
     //connect(newa, SIGNAL(triggered()), this, SLOT(helov));
     connect(open, &QAction::triggered, this, &TextJokEditor::fileOpen);
@@ -99,6 +104,8 @@ TextJokEditor::TextJokEditor(QWidget *parent)
 
     connect(newa, &QAction::triggered, this, &TextJokEditor::fileNew);
     connect(newtoolbar, &QAction::triggered, this, &TextJokEditor::fileNew);
+
+    connect(quit, &QAction::triggered, this, &QApplication::quit);
 
     connect(copy, &QAction::triggered, this, &TextJokEditor::textCopy);
     connect(copytoolbar, &QAction::triggered, this, &TextJokEditor::textCopy);
@@ -116,14 +123,16 @@ TextJokEditor::TextJokEditor(QWidget *parent)
     connect(redotoolbar, &QAction::triggered, this, &TextJokEditor::textRedo);
 
 
-    //подключение
-    //connect(settings, SIGNAL(triggered()), m_SettingsEditor, SLOT(showPreferencesDialog) , Qt::UniqueConnection);
-
+    //подключение сигнала настроек к слоту отображение настроек
     connect(settings, &QAction::triggered, this, &TextJokEditor::showPreferencesDialog);
 
     connect(m_SettingsEditor,SIGNAL(accepted()), this, SLOT(slotPreferencesAccepted()));
 
+    //подключение сигнала настроек к слоту отображение настроек
+    connect(ui->textField, SIGNAL(textChanged()), this, SLOT(countWS()));
+
 }
+//слот открытия файла
 void TextJokEditor::fileOpen(){
 
     m_fileNameOpen = QFileDialog::getOpenFileName(this, "Open file ...", QDir::homePath(), "*.txt;; All files (*.*)");
@@ -135,6 +144,7 @@ void TextJokEditor::fileOpen(){
         return;
 
     QFile file(m_fileNameOpen);
+
 
     updateTitle(file.fileName());
 
@@ -157,10 +167,12 @@ void TextJokEditor::fileOpen(){
         QMessageBox::warning(this, "File not found", "File not found");
     }
 
-
-    //QMessageBox::information(this, "Text", " chto proishodit");
+    //QMessageBox::information(this, "Text", "test");
 
 }
+
+
+//запись в файл
 
 void openFileWrite(QFile &file, QString &textData, QWidget *wid){
 
@@ -177,6 +189,7 @@ void openFileWrite(QFile &file, QString &textData, QWidget *wid){
     }
 
 }
+//слот сохранения в файл
 void TextJokEditor::fileSave()
 {
 
@@ -200,6 +213,7 @@ void TextJokEditor::fileSave()
     }
 }
 
+//создание пустого файла с проверкой на сохранение файла
 void TextJokEditor::fileNew()
 {
     //проверка на изменения файла
@@ -212,6 +226,7 @@ void TextJokEditor::fileNew()
     }
 }
 
+//стандртые слоты при работе с текстом
 void TextJokEditor::textCopy()
 {
     ui->textField->copy();
@@ -236,37 +251,58 @@ void TextJokEditor::textRedo()
     ui->textField->redo();
 }
 
+//вывод в statusbar
+void TextJokEditor::outPutStatusBar(int first, int second)
+{
+
+    //ui->statusbar->showMessage(out.arg(first).arg(second));
+    label->setText(out.arg(first).arg(second));
+    ui->statusbar->addWidget(label);
+}
+
+//подсчет количества слов и символов
+void TextJokEditor::countWS()
+{
+    int countWord;
+    int countSymbol = 0;
+
+    countWord = ui->textField->toPlainText().split((" "), Qt::SkipEmptyParts).count();
+    countWord += ui->textField->toPlainText().split(("\n"), Qt::SkipEmptyParts).count() - 1;
+    if (countWord < 0)
+        countWord = 0;
+    countSymbol = ui->textField->toPlainText().length();
+
+    outPutStatusBar(countWord,countSymbol);
+
+}
+
+//изменения титульника файла
 void TextJokEditor::updateTitle(QString fileName)
 {
-    //Подставляем в название заголовка имя текущего открытого файла.
-    //Комбинацией символов " [ ∗ ] " обозначаем место, где будет выводиться знак "∗" в случае,
-    //когда содержимое окна модифицировано.
-
-    QString title = QString("TextJokEditor - %1[*]").arg(fileName); //устанавливаем заголовок окна
+    QString title = QString("TextJokEditor - %1").arg(fileName); //устанавливаем заголовок окна
     setWindowTitle( title ) ;
 }
 //https://qthelper.ru/%D1%81%D0%BE%D1%85%D1%80%D0%B0%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BD%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B5%D0%BA-qsettings/
+
+//чтение сохраненных настроек
 void TextJokEditor::readSettings()
 {
-    //Указываем,где хранились настройки. QSettings::NativeFormat — в формате определенном системой
+    //Указываем,где хранились настройки.
+    //QSettings::NativeFormat — в формате определенном системой
     //QSettings::UserScope — настройки для каждого пользователя отдельно.
-    //Также устанавливаем имя организациии название программы
     QSettings Settings(QSettings::NativeFormat, QSettings::UserScope,"",qApp->applicationName());
     //Открываем группу настроек
     Settings.beginGroup("SETTINGS_GROUP_VIEW");
     //Читаемнастройки
-    bool ShowToolBar = Settings.value("SETTING_SHOW_TOOLBAR",true).toBool();
+    bool ShowToolBar = Settings.value("SETTING_SHOW_TOOLBAR",m_SettingsEditor->isShowToolBar()).toBool();
     m_SettingsEditor->setShowToolBar(ShowToolBar);
-    bool ShowStatusBar= Settings.value("SETTING_SHOW_STATUS_BAR",true).toBool
-    ();
+    bool ShowStatusBar= Settings.value("SETTING_SHOW_STATUS_BAR",m_SettingsEditor->isShowStatusBar()).toBool();
     m_SettingsEditor->setShowStatusBar(ShowStatusBar);
 }
 
+//запись настроек
 void TextJokEditor::writeSettings()
 {
-    //Указываем как сохранять настройки. QSettings::NativeFormat — в формате определенном системой
-    //QSettings::UserScope — настройки для каждого пользователя отдельно.
-    //Также устанавливаем имя организациии название программы.
     QSettings Settings(QSettings::NativeFormat,QSettings::UserScope,"",qApp->applicationName());
     //Открываем группу настроек
     Settings.beginGroup("SETTINGS_GROUP_VIEW");
@@ -276,6 +312,7 @@ void TextJokEditor::writeSettings()
 
 }
 
+//применение настроек
 void TextJokEditor::applySettings()
 {
     //Читаем настройки установленые в диалоге и применяем их
@@ -288,6 +325,7 @@ TextJokEditor::~TextJokEditor()
     delete ui;
 }
 
+//отображение формы настроек
 void TextJokEditor::showPreferencesDialog()
 {
     readSettings();
@@ -295,6 +333,7 @@ void TextJokEditor::showPreferencesDialog()
     m_SettingsEditor->show();
 }
 
+//записать и применить настроек
 void TextJokEditor::slotPreferencesAccepted()
 {
     writeSettings(); //Записать новые настройки

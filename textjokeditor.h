@@ -8,6 +8,9 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <QSettings>
+#include <QShortcut>
+#include <QLabel>
+
 
 
 QT_BEGIN_NAMESPACE
@@ -33,6 +36,7 @@ private slots:
     void textCut();
     void textUndo();
     void textRedo();
+    void countWS();
 
     void showPreferencesDialog( ) ;
     void slotPreferencesAccepted();
@@ -42,23 +46,25 @@ private:
     QMenu *m_file;
     QMenu *m_edit;
     QMenu *m_settings;
+    QLabel *label;
 
     QString m_textData;
-
+    QString out = "Number of word %1, number of characters: %2";
     QString m_fileNameOpen;
     QString m_fileNameSave;
-
     bool m_isNewFile;
 
     Ui::TextJokEditor *ui;
 
     void updateTitle(QString);
+    void outPutStatusBar(int,int);
 
     SettingsEditor *m_SettingsEditor;
 
     void readSettings();
     void writeSettings();
     void applySettings();
+
 
 
 };
