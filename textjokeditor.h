@@ -11,6 +11,10 @@
 #include <QShortcut>
 #include <QLabel>
 
+#include "menubar.h"
+#include "toolbar.h"
+
+
 
 
 QT_BEGIN_NAMESPACE
@@ -24,6 +28,7 @@ class TextJokEditor : public QMainWindow
     Q_OBJECT
 
 public:
+    //TextJokEditor(MenuBar &,Toolbar &, QWidget *parent = nullptr);
     TextJokEditor(QWidget *parent = nullptr);
     ~TextJokEditor();
 
@@ -42,10 +47,15 @@ private slots:
     void slotPreferencesAccepted();
 
 private:
-    QToolBar *m_toolbar;
-    QMenu *m_file;
-    QMenu *m_edit;
-    QMenu *m_settings;
+    
+    MenuBar m_menu;
+    Toolbar m_toolbar;
+
+
+//    QToolBar *m_toolbar;
+//    QMenu *m_file;
+//    QMenu *m_edit;
+//    QMenu *m_settings;
     QLabel *label;
 
     QString m_textData;
