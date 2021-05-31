@@ -1,3 +1,0 @@
-# Hashes of file build rules.
-17ba84abb78c7b57c075d461265d0fa7 CMakeFiles/TextJokEditor_autogen
-1a006d2656621199c64aa3b59f31c359 TextJokEditor_autogen/3YJK5W5UP7/qrc_resources.cpp
