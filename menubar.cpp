@@ -39,6 +39,7 @@ MenuBar::MenuBar()
     m_action.push_back(copy);
     m_action.push_back(paste);
 
+
     //горячие клавиши
     undo->setShortcut(QKeySequence::Undo);
     redo->setShortcut(QKeySequence::Redo);
