@@ -1,19 +1,19 @@
 #include "toolbar.h"
 
-Toolbar::Toolbar()
+Toolbar::Toolbar(const QString &title, QWidget *parent)
+    :QToolBar(title, parent)
 {
-//    m_toolbar = addToolBar("Main toolbar");
 
-    QAction *newtoolbar = m_toolbar->addAction(m_picturemap.getPictureIcon()[0], "New file");
-    QAction *opentoolbar = m_toolbar->addAction(m_picturemap.getPictureIcon()[1], "Open file");
-    QAction *savetoolbar = m_toolbar->addAction(m_picturemap.getPictureIcon()[2], "Save file");
-    m_toolbar->addSeparator();
-    QAction *undotoolbar = m_toolbar->addAction(m_picturemap.getPictureIcon()[3], "Undo text");
-    QAction *redotoolbar = m_toolbar->addAction(m_picturemap.getPictureIcon()[4], "Redo text");
-    m_toolbar->addSeparator();
-    QAction *cuttoolbar = m_toolbar->addAction(m_picturemap.getPictureIcon()[5], "Cut text");
-    QAction *copytoolbar = m_toolbar->addAction(m_picturemap.getPictureIcon()[6], "Copy text");
-    QAction *pastetoolbar = m_toolbar->addAction(m_picturemap.getPictureIcon()[7], "Paste text");
+    QAction *newtoolbar = addAction(m_picturemap.getPictureIcon()[0], "Open file");
+    QAction *opentoolbar = addAction(m_picturemap.getPictureIcon()[1], "Open file");
+    QAction *savetoolbar = addAction(m_picturemap.getPictureIcon()[2], "Save file");
+    addSeparator();
+    QAction *undotoolbar = addAction(m_picturemap.getPictureIcon()[3], "Undo text");
+    QAction *redotoolbar = addAction(m_picturemap.getPictureIcon()[4], "Redo text");
+    addSeparator();
+    QAction *cuttoolbar = addAction(m_picturemap.getPictureIcon()[5], "Cut text");
+    QAction *copytoolbar = addAction(m_picturemap.getPictureIcon()[6], "Copy text");
+    QAction *pastetoolbar = addAction(m_picturemap.getPictureIcon()[7], "Paste text");
 
     m_action.push_back(newtoolbar);
     m_action.push_back(opentoolbar);
@@ -27,12 +27,8 @@ Toolbar::Toolbar()
 
 }
 
-void Toolbar::setToolbar(QToolBar *toolbar)
-{
-    m_toolbar = toolbar;
-}
-
 QVector<QAction *> Toolbar::getAction()
 {
     return m_action;
 }
+

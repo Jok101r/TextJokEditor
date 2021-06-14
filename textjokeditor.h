@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QMainWindow>
-#include <QAction>
-#include <QToolBar>
 #include <QPixmap>
 #include <QMessageBox>
 #include <QFileDialog>
@@ -10,7 +8,6 @@
 #include <QSettings>
 #include <QShortcut>
 #include <QLabel>
-
 #include "menubar.h"
 #include "toolbar.h"
 
@@ -27,12 +24,25 @@ class TextJokEditor : public QMainWindow
 {
     Q_OBJECT
 
+    Toolbar *m_toolbar;
+    MenuBar *m_menu;
+    QLabel *label;
+
+    QString m_textData;
+    QString out = "Number of word %1, number of characters: %2";
+    QString m_fileNameOpen;
+    QString m_fileNameSave;
+    bool m_isNewFile;
+
+    Ui::TextJokEditor *ui;
+
+    SettingsEditor *m_SettingsEditor;
+
 public:
-    //TextJokEditor(MenuBar &,Toolbar &, QWidget *parent = nullptr);
     TextJokEditor(QWidget *parent = nullptr);
     ~TextJokEditor();
 
-private slots:
+public slots:
     void fileOpen();
     void fileSave();
     void fileNew();
@@ -47,29 +57,9 @@ private slots:
     void slotPreferencesAccepted();
 
 private:
-    
-    MenuBar m_menu;
-    Toolbar m_toolbar;
-
-
-//    QToolBar *m_toolbar;
-//    QMenu *m_file;
-//    QMenu *m_edit;
-//    QMenu *m_settings;
-    QLabel *label;
-
-    QString m_textData;
-    QString out = "Number of word %1, number of characters: %2";
-    QString m_fileNameOpen;
-    QString m_fileNameSave;
-    bool m_isNewFile;
-
-    Ui::TextJokEditor *ui;
 
     void updateTitle(QString);
     void outPutStatusBar(int,int);
-
-    SettingsEditor *m_SettingsEditor;
 
     void readSettings();
     void writeSettings();
