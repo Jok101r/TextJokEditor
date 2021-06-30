@@ -7,16 +7,19 @@ MenuBar::MenuBar(QWidget *parent)
     QAction *newa = new QAction(m_picturemap.getPictureIcon()[0], "&New");
     QAction *open = new QAction(m_picturemap.getPictureIcon()[1], "&Open");
     QAction *save = new QAction(m_picturemap.getPictureIcon()[2], "&Save");
+    QAction *saveAs = new QAction(m_picturemap.getPictureIcon()[2], "&Save as...");
     QAction *quit = new QAction(m_picturemap.getPictureIcon()[8], "&Quit");
 
     m_action.push_back(newa);
     m_action.push_back(open);
     m_action.push_back(save);
+    m_action.push_back(saveAs);
     m_action.push_back(quit);
     //горячие клавижши
     newa->setShortcut(QKeySequence::New);
     open->setShortcut(QKeySequence::Open);
     save->setShortcut(QKeySequence::Save);
+    saveAs->setShortcut(QKeySequence::SaveAs);
     quit->setShortcut(QKeySequence::Close);
 
     //отображение
@@ -24,6 +27,7 @@ MenuBar::MenuBar(QWidget *parent)
     m_file->addAction(newa);
     m_file->addAction(open);
     m_file->addAction(save);
+    m_file->addAction(saveAs);
     m_file->addSeparator();
     m_file->addAction(quit);
     addMenu(m_file);

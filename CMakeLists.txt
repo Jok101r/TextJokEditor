@@ -13,19 +13,6 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# QtCreator supports the following variables for Android, which are identical to qmake Android variables.
-# Check https://doc.qt.io/qt/deployment-android.html for more information.
-# They need to be set before the find_package( ...) calls below.
-
-#if(ANDROID)
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-#    if (ANDROID_ABI STREQUAL "armeabi-v7a")
-#        set(ANDROID_EXTRA_LIBS
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libcrypto.so
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libssl.so)
-#    endif()
-#endif()
-
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
@@ -70,15 +57,16 @@ target_link_libraries(TextJokEditor PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 #install(TARGETS TextJokEditor DESTINATION bin)
 
 # Задать некоторые характеристики пакета:
-#set(CPACK_PACKAGE_NAME "printMessage")
-#set(CPACK_PACKAGE_VENDOR "MyCompany")
-#set(CPACK_PACKAGE_CONTACT "https://test.ru")
-#set(CPACK_DEBIAN_PACKAGE_MAINTAINER "test@gmail.com")
-#set(CPACK_PACKAGE_DESCRIPTION "The most stupid program ever written")
+set(CPACK_PACKAGE_NAME "TextJokEditor")
+set(CPACK_PACKAGE_VENDOR "MyCompany")
+set(CPACK_PACKAGE_CONTACT "https://test.ru")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "test@gmail.com")
+set(CPACK_PACKAGE_DESCRIPTION "Standart editor program")
 
 # Задать используемый генератор пакетов:
-#set(CPACK_GENERATOR "DragNDrop")
+set(CPACK_GENERATOR "DEB")
 
 # Включить стандартный модуль "CPack":
-#include(CPack)
+include(CPack)
+
 

@@ -4,7 +4,6 @@
 #include <QPixmap>
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QTextStream>
 #include <QSettings>
 #include <QShortcut>
 #include <QLabel>
@@ -29,10 +28,12 @@ class TextJokEditor : public QMainWindow
     QLabel *label;
 
     QString m_textData;
-    QString out = "Number of word %1, number of characters: %2";
+    QString m_out = "Number of word %1, number of characters: %2";
     QString m_fileNameOpen;
     QString m_fileNameSave;
-    bool m_isNewFile;
+    bool m_isSaveDocument = true;
+    bool m_isOpenDocument = true;
+    bool m_isNewFile = true;
 
     Ui::TextJokEditor *ui;
 
@@ -45,6 +46,7 @@ public:
 public slots:
     void fileOpen();
     void fileSave();
+    void fileSaveAs();
     void fileNew();
     void textCopy();
     void textPaste();
@@ -52,6 +54,7 @@ public slots:
     void textUndo();
     void textRedo();
     void countWS();
+    void saveDocument();
 
     void showPreferencesDialog( ) ;
     void slotPreferencesAccepted();
