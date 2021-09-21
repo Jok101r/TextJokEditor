@@ -1,7 +1,7 @@
 #MacOS
 .DS_Store
 CMakeLists.txt.user
-
+build/*
 
 # C++ objects and libs
 *.slo

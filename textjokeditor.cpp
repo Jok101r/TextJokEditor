@@ -1,179 +1,176 @@
 #include "textjokeditor.h"
 #include "settingseditor.h"
+
 #include "./ui_textjokeditor.h"
+
 
 TextJokEditor::TextJokEditor(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::TextJokEditor),
-     // добавление диалога в программу
-     m_SettingsEditor (new SettingsEditor(this))
+    , ui(new Ui::TextJokEditor)
+     // добавление диалога настроек в программу
+    , m_SettingsEditor (new SettingsEditor(this))
 {
+
     ui->setupUi(this);
     //статический вывод в статусбаре
     label = new QLabel (this);
 
-    QPixmap newpic(":/icons/mainform/new3232");
-    QPixmap openpic(":/icons/mainform/open3232");
-    QPixmap savepic(":/icons/mainform/save3232");
-    QPixmap undopic(":/icons/mainform/undo3232");
-    QPixmap redopic(":/icons/mainform/redo3232");
-    QPixmap cutpic(":/icons/mainform/cut3232");
-    QPixmap copypic(":/icons/mainform/copy3232");
-    QPixmap pasterpic(":/icons/mainform/paste3232");
-    QPixmap quitpic(":/icons/mainform/logout3232");
-    QPixmap setpic(":/icons/mainform/settings3232");
+    m_toolbar = new Toolbar("Main toolbar", this);
+    m_menu = new MenuBar(this);
 
-    //меню File
-    QAction *newa = new QAction(newpic, "&New", this);
-    QAction *open = new QAction(openpic, "&Open", this);
-    QAction *save = new QAction(savepic, "&Save", this);
-    QAction *quit = new QAction(quitpic, "&Quit", this);
-
-    //горячие клавиши
-    newa->setShortcut(QKeySequence::New);
-    open->setShortcut(QKeySequence::Open);
-    save->setShortcut(QKeySequence::Save);
-    quit->setShortcut(QKeySequence::Close);
-
-    //отображение
-    m_file = menuBar()->addMenu("&File");
-    m_file->addAction(newa);
-    m_file->addAction(open);
-    m_file->addAction(save);
-    m_file->addSeparator();
-    m_file->addAction(quit);
+    setMenuBar(m_menu);
+    addToolBar(m_toolbar);
+    readSettings();
+    applySettings();
 
 
-    //меню Edit
-    QAction *undo = new QAction(undopic, "&Undo", this);
-    QAction *redo = new QAction(redopic, "&Redo", this);
-    QAction *cut = new QAction(cutpic, "&Cut", this);
-    QAction *copy = new QAction(copypic, "&Copy", this);
-    QAction *paste = new QAction(pasterpic, "&Paste", this);
-
-    //горячие клавиши
-    undo->setShortcut(QKeySequence::Undo);
-    redo->setShortcut(QKeySequence::Redo);
-    cut->setShortcut(QKeySequence::Cut);
-    copy->setShortcut(QKeySequence::Copy);
-    paste->setShortcut(QKeySequence::Paste);
-
-     //отображение
-    m_edit = menuBar()->addMenu("&Edit");
-    m_edit->addAction(undo);
-    m_edit->addAction(redo);
-    m_edit->addSeparator();
-    m_edit->addAction(cut);
-    m_edit->addAction(copy);
-    m_edit->addAction(paste);
-
-    //Меню Settings
-    QAction *settings = new QAction(setpic, "&Settings", this);
-
-    //горячие клавиши
-    //проверить работу на маке
-    settings->setShortcut(tr("CTRL+P"));
-
-    //отображение
-    m_settings = menuBar()->addMenu("&Settings");
-    m_settings->addAction(settings);
 
 
-    m_toolbar = addToolBar("Main toolbar");
 
-    QAction *newtoolbar = m_toolbar->addAction(newpic, "New file");
-    QAction *opentoolbar = m_toolbar->addAction(openpic, "Open file");
-    QAction *savetoolbar = m_toolbar->addAction(savepic, "Save file");
-    m_toolbar->addSeparator();
-    QAction *undotoolbar = m_toolbar->addAction(undopic, "Undo text");
-    QAction *redotoolbar = m_toolbar->addAction(redopic, "Redo text");
-    m_toolbar->addSeparator();
-    QAction *cuttoolbar = m_toolbar->addAction(cutpic, "Cut text");
-    QAction *copytoolbar = m_toolbar->addAction(copypic, "Copy text");
-    QAction *pastetoolbar = m_toolbar->addAction(pasterpic, "Paste text");
+    //new
+    connect(m_toolbar->getAction()[0], &QAction::triggered, this, &TextJokEditor::fileNew);
+    connect(m_menu->getAction()[0], &QAction::triggered, this, &TextJokEditor::fileNew);
+   //open
+    connect(m_toolbar->getAction()[1], &QAction::triggered, this, &TextJokEditor::fileOpen);
+    connect(m_menu->getAction()[1], &QAction::triggered, this, &TextJokEditor::fileOpen);
 
-    //подключение кнопок в Qtoolbar и Qmenu к слоту
+    //save
+    connect(m_toolbar->getAction()[2], &QAction::triggered, this, &TextJokEditor::fileSave);
+    connect(m_menu->getAction()[2], &QAction::triggered, this, &TextJokEditor::fileSave);
 
-    //это почему-то не работает:(
-    //connect(newa, SIGNAL(triggered()), this, SLOT(helov));
-    connect(open, &QAction::triggered, this, &TextJokEditor::fileOpen);
-    connect(opentoolbar, &QAction::triggered, this, &TextJokEditor::fileOpen);
+    //saveAs
+    connect(m_menu->getAction()[3], &QAction::triggered, this, &TextJokEditor::fileSaveAs);
 
-    connect(save, &QAction::triggered, this, &TextJokEditor::fileSave);
-    connect(savetoolbar, &QAction::triggered, this, &TextJokEditor::fileSave);
+    //quit
+    connect(m_menu->getAction()[4], &QAction::triggered, this, &QApplication::quit);
 
-    connect(newa, &QAction::triggered, this, &TextJokEditor::fileNew);
-    connect(newtoolbar, &QAction::triggered, this, &TextJokEditor::fileNew);
+    //undo
+    connect(m_toolbar->getAction()[3], &QAction::triggered, this, &TextJokEditor::textUndo);
+    connect(m_menu->getAction()[5], &QAction::triggered, this, &TextJokEditor::textUndo);
 
-    connect(quit, &QAction::triggered, this, &QApplication::quit);
+    //redo
+    connect(m_toolbar->getAction()[4], &QAction::triggered, this, &TextJokEditor::textRedo);
+    connect(m_menu->getAction()[6], &QAction::triggered, this, &TextJokEditor::textRedo);
 
-    connect(copy, &QAction::triggered, this, &TextJokEditor::textCopy);
-    connect(copytoolbar, &QAction::triggered, this, &TextJokEditor::textCopy);
+    //cut
+    connect(m_toolbar->getAction()[5], &QAction::triggered, this, &TextJokEditor::textCut);
+    connect(m_menu->getAction()[7], &QAction::triggered, this, &TextJokEditor::textCut);
 
-    connect(paste, &QAction::triggered, this, &TextJokEditor::textCopy);
-    connect(pastetoolbar, &QAction::triggered, this, &TextJokEditor::textPaste);
+    //copy
+   connect(m_toolbar->getAction()[6], &QAction::triggered, this, &TextJokEditor::textCopy);
+   connect(m_menu->getAction()[8], &QAction::triggered, this, &TextJokEditor::textCopy);
 
-    connect(cut, &QAction::triggered, this, &TextJokEditor::textCut);
-    connect(cuttoolbar, &QAction::triggered, this, &TextJokEditor::textCut);
+    //paste
+    connect(m_toolbar->getAction()[7], &QAction::triggered, this, &TextJokEditor::textPaste);
+    connect(m_menu->getAction()[9], &QAction::triggered, this, &TextJokEditor::textCopy);
 
-    connect(undo, &QAction::triggered, this, &TextJokEditor::textUndo);
-    connect(undotoolbar, &QAction::triggered, this, &TextJokEditor::textUndo);
+//    //подключение сигнала настроек к слоту отображение настроек
+    connect(m_menu->getAction()[10], &QAction::triggered, this, &TextJokEditor::showPreferencesDialog);
 
-    connect(redo, &QAction::triggered, this, &TextJokEditor::textRedo);
-    connect(redotoolbar, &QAction::triggered, this, &TextJokEditor::textRedo);
-
+    connect(m_SettingsEditor, &QDialog::accepted, this, &TextJokEditor::slotPreferencesAccepted);
 
     //подключение сигнала настроек к слоту отображение настроек
-    connect(settings, &QAction::triggered, this, &TextJokEditor::showPreferencesDialog);
+    connect(ui->textField, &QPlainTextEdit::textChanged, this, &TextJokEditor::countWS);
 
-    connect(m_SettingsEditor,SIGNAL(accepted()), this, SLOT(slotPreferencesAccepted()));
-
-    //подключение сигнала настроек к слоту отображение настроек
-    connect(ui->textField, SIGNAL(textChanged()), this, SLOT(countWS()));
+    connect(ui->textField, &QPlainTextEdit::textChanged, this, &TextJokEditor::saveDocument );
 
 }
+
+//создание пустого файла с проверкой на сохранение файла
+void TextJokEditor::fileNew()
+{
+    //проверка на изменения файла
+    if (ui->textField->toPlainText().isEmpty())
+    {
+        m_textData.clear();
+        ui->textField->setPlainText(m_textData);
+        setWindowTitle("TextJokEditor") ;
+        m_isNewFile = true;
+
+    }else
+    {
+        if(m_isSaveDocument == false)
+        {
+            fileSave();
+//            if(m_isSaveDocument == false)
+//            {
+//                return;
+//            }
+            m_textData.clear();
+            ui->textField->setPlainText(m_textData);
+            setWindowTitle("TextJokEditor") ;
+            m_isNewFile = true;
+        }
+    }
+}
+
 //слот открытия файла
 void TextJokEditor::fileOpen(){
 
-    m_fileNameOpen = QFileDialog::getOpenFileName(this, "Open file ...", QDir::homePath(), "*.txt;; All files (*.*)");
+    if (m_isNewFile == true)
+    {
+        m_fileNameOpen = QFileDialog::getOpenFileName(this, "Open file ...", QDir::homePath(), "*.txt;; All files (*.*)");
 
-    //в случае пересохранении текстового файла
-    m_fileNameSave = m_fileNameOpen;
-
-    if (m_fileNameOpen.isEmpty())
-        return;
-
-    QFile file(m_fileNameOpen);
-
-
-    updateTitle(file.fileName());
-
-    if(file.exists()){
-        file.open(QIODevice::ReadOnly);
-
-        QTextStream in(&file);
-
-        m_textData.clear();
-        while (!in.atEnd()) {
-
-            m_textData.push_back(in.read(1));
-
+        if (m_fileNameOpen.isEmpty())
+        {
+            m_isOpenDocument = false;
+            return;
         }
-        ui->textField->setPlainText(m_textData);
+        m_isOpenDocument = true;
+        //в случае пересохранении текстового файла
+        m_fileNameSave = m_fileNameOpen;
+
+        if (m_fileNameOpen.isEmpty())
+            return;
+
+        QFile file(m_fileNameOpen);
+        updateTitle(file.fileName());
+
+        if(file.exists())
+        {
+
+            file.open(QIODevice::ReadWrite);
+            QTextStream in(&file);
+            m_textData.clear();
+
+            while (!in.atEnd())
+            {
+
+                m_textData.push_back(in.read(1));
+
+            }
+
+            ui->textField->setPlainText(m_textData);
+
+            m_isNewFile = false;
+
+        }else
+        {
+            QMessageBox::warning(this, "File not found", "File not found");
+        }
+    }else
+
+    //if (m_isNewFile == false)
+    {
+
+        //проверка на сохраненный документ
+        if (m_isSaveDocument == false)
+        {
+            fileSave();
+        }
+        m_isNewFile = true;
+        fileOpen();
 
 
     }
-    else {
-        QMessageBox::warning(this, "File not found", "File not found");
-    }
 
-    //QMessageBox::information(this, "Text", "test");
+
+    //QMessageBox::warning(this, "Warning", "Something wrong....try again");
+
 
 }
 
-
 //запись в файл
-
 void openFileWrite(QFile &file, QString &textData, QWidget *wid){
 
     file.open(QIODevice::Text | QIODevice::WriteOnly);
@@ -195,35 +192,44 @@ void TextJokEditor::fileSave()
 
     m_textData = ui->textField->toPlainText();
 
-    if (m_fileNameSave.isEmpty()){
-        QString m_fileNameSave = QFileDialog::getSaveFileName(this, "Save file...", QDir::homePath(), tr (" *.txt;; All files (*.*)" )) ;
-
-        if(m_fileNameSave.isEmpty())
-            return;
-
-        QFile file(m_fileNameSave);
-
-        openFileWrite(file, m_textData, this);
+    if (m_fileNameSave.isEmpty())
+    {
+        fileSaveAs();
+    }else
+    {
+        auto answer = QMessageBox::question(this, "Save?", "Аre you sure you want to save the document?");
+        if (answer == QMessageBox::Yes)
+        {
+            QFile file(m_fileNameSave);
+            file.remove();
+            openFileWrite(file, m_textData, this);
+            m_isSaveDocument = true;
+        }
+        if (answer == QMessageBox::No)
+        {
+            m_isSaveDocument = false;
+        }
     }
-    else{
 
-        QFile file(m_fileNameSave);
-        file.remove();
-        openFileWrite(file,m_textData, this);
-    }
+
 }
 
-//создание пустого файла с проверкой на сохранение файла
-void TextJokEditor::fileNew()
+void TextJokEditor::fileSaveAs()
 {
-    //проверка на изменения файла
-    if (true){
-        m_textData.clear();
-        ui->textField->setPlainText(m_textData);
+    m_textData = ui->textField->toPlainText();
 
-    }else {
-        fileSave();
+    QString m_fileNameSave = QFileDialog::getSaveFileName(this, "Save file...", QDir::homePath(), tr (" *.txt;; All files (*.*)" )) ;
+
+    if(m_fileNameSave.isEmpty())
+    {
+        m_isSaveDocument = false;
+        return;
     }
+
+    QFile file(m_fileNameSave);
+    openFileWrite(file, m_textData, this);
+    m_isSaveDocument = true;
+
 }
 
 //стандртые слоты при работе с текстом
@@ -254,9 +260,7 @@ void TextJokEditor::textRedo()
 //вывод в statusbar
 void TextJokEditor::outPutStatusBar(int first, int second)
 {
-
-    //ui->statusbar->showMessage(out.arg(first).arg(second));
-    label->setText(out.arg(first).arg(second));
+    label->setText(m_out.arg(first).arg(second));
     ui->statusbar->addWidget(label);
 }
 
@@ -266,23 +270,28 @@ void TextJokEditor::countWS()
     int countWord;
     int countSymbol = 0;
 
-    countWord = ui->textField->toPlainText().split((" "), Qt::SkipEmptyParts).count();
-    countWord += ui->textField->toPlainText().split(("\n"), Qt::SkipEmptyParts).count() - 1;
+    countWord = ui->textField->toPlainText().split((" "), QString::SkipEmptyParts).count();
+    countWord += ui->textField->toPlainText().split(("\n"), QString::SkipEmptyParts).count() - 1;
     if (countWord < 0)
         countWord = 0;
     countSymbol = ui->textField->toPlainText().length();
-
     outPutStatusBar(countWord,countSymbol);
 
+}
+
+void TextJokEditor::saveDocument()
+{
+    m_isSaveDocument = false;
 }
 
 //изменения титульника файла
 void TextJokEditor::updateTitle(QString fileName)
 {
-    QString title = QString("TextJokEditor - %1").arg(fileName); //устанавливаем заголовок окна
+    QString title = QString("TextJokEditor - %1").arg(fileName);
+    //устанавливаем заголовок окна
     setWindowTitle( title ) ;
 }
-//https://qthelper.ru/%D1%81%D0%BE%D1%85%D1%80%D0%B0%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BD%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B5%D0%BA-qsettings/
+
 
 //чтение сохраненных настроек
 void TextJokEditor::readSettings()
@@ -290,7 +299,8 @@ void TextJokEditor::readSettings()
     //Указываем,где хранились настройки.
     //QSettings::NativeFormat — в формате определенном системой
     //QSettings::UserScope — настройки для каждого пользователя отдельно.
-    QSettings Settings(QSettings::NativeFormat, QSettings::UserScope,"",qApp->applicationName());
+    //QSettings Settings(QSettings::NativeFormat, QSettings::UserScope,"",qApp->applicationName());
+    QSettings Settings("settings.conf", QSettings::IniFormat);
     //Открываем группу настроек
     Settings.beginGroup("SETTINGS_GROUP_VIEW");
     //Читаемнастройки
@@ -303,7 +313,7 @@ void TextJokEditor::readSettings()
 //запись настроек
 void TextJokEditor::writeSettings()
 {
-    QSettings Settings(QSettings::NativeFormat,QSettings::UserScope,"",qApp->applicationName());
+    QSettings Settings("settings.conf", QSettings::IniFormat);
     //Открываем группу настроек
     Settings.beginGroup("SETTINGS_GROUP_VIEW");
     //Записываем настройки

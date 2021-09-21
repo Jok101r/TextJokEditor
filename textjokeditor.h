@@ -1,15 +1,15 @@
 #pragma once
 
 #include <QMainWindow>
-#include <QAction>
-#include <QToolBar>
 #include <QPixmap>
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QTextStream>
 #include <QSettings>
 #include <QShortcut>
 #include <QLabel>
+#include "menubar.h"
+#include "toolbar.h"
+
 
 
 
@@ -23,13 +23,30 @@ class TextJokEditor : public QMainWindow
 {
     Q_OBJECT
 
+    Toolbar *m_toolbar;
+    MenuBar *m_menu;
+    QLabel *label;
+
+    QString m_textData;
+    QString m_out = "Number of word %1, number of characters: %2";
+    QString m_fileNameOpen;
+    QString m_fileNameSave;
+    bool m_isSaveDocument = true;
+    bool m_isOpenDocument = true;
+    bool m_isNewFile = true;
+
+    Ui::TextJokEditor *ui;
+
+    SettingsEditor *m_SettingsEditor;
+
 public:
     TextJokEditor(QWidget *parent = nullptr);
     ~TextJokEditor();
 
-private slots:
+public slots:
     void fileOpen();
     void fileSave();
+    void fileSaveAs();
     void fileNew();
     void textCopy();
     void textPaste();
@@ -37,29 +54,15 @@ private slots:
     void textUndo();
     void textRedo();
     void countWS();
+    void saveDocument();
 
     void showPreferencesDialog( ) ;
     void slotPreferencesAccepted();
 
 private:
-    QToolBar *m_toolbar;
-    QMenu *m_file;
-    QMenu *m_edit;
-    QMenu *m_settings;
-    QLabel *label;
-
-    QString m_textData;
-    QString out = "Number of word %1, number of characters: %2";
-    QString m_fileNameOpen;
-    QString m_fileNameSave;
-    bool m_isNewFile;
-
-    Ui::TextJokEditor *ui;
 
     void updateTitle(QString);
     void outPutStatusBar(int,int);
-
-    SettingsEditor *m_SettingsEditor;
 
     void readSettings();
     void writeSettings();
